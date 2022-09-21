@@ -1,6 +1,0 @@
-$(function () {
-    const id = $("input[name='id']").val().trim();
-    loadMyReserveList(id);
-
-
-})
