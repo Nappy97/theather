@@ -1,4 +1,4 @@
-# theather 영화관
+# theather 영화관(팀프로젝트)
 
 # 프로젝트 기간 
   2022/08/25 ~ 2022/09/20
@@ -34,7 +34,7 @@
 > > > 디테일의 댓글 CRUD
 > > > 영화 예매 가능
 
-## userinformation
+## userinformation 
 > 회원정보
 > > about
 > > > 해당 유저의 시청횟수에 따른 등급
