@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.MCommentDAO">
+	<resultMap type="domain.UserDTO" id="mapUser">
+	    <result column="u_id" property="id"/>
+	    <result column="u_username" property="username"/>
+	    <result column="u_password" property="password"/>
+	    <result column="u_name" property="name"/>
+	    <result column="u_authorities" property="authorities"/>
+	    <result column="u_regdate" property="regDate"/>
+	</resultMap>
+	
+	<resultMap type="domain.MCommentDTO" id="mapComment">
+	    <result column="c_id" property="id"/>
+	    <result column="c_content" property="content"/>
+	    <result column="c_star" property="star"/>
+	    <result column="c_regdate" property="regdate"/>
+	    <collection property="user" resultMap="mapUser"/>
+	</resultMap>
+	
+	<select id="selectByMovie" resultMap="mapComment">
+	    SELECT
+	        c.id "c_id",
+	        c.content "c_content",
+	        c.star "c_star",
+	        c.regdate "c_regdate",
+	        u.id "u_id",
+	        u.username "u_username",
+	        u.password "u_password",
+	        u.name "u_name",
+	        u.authorities "u_authorities",
+	        u.regdate "u_regdate"            
+	    FROM ci_mcomment c, ci_user u
+	    WHERE
+	        c.user_id = u.id
+	        AND c.movie_id = #{param1}
+	    ORDER BY c.id DESC
+	    LIMIT #{param2}, 5
+	</select>
+
+	<insert id="insert" flushCache="true" parameterType="domain.MCommentDTO"
+		keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+		
+		INSERT INTO ci_mcomment(user_id, movie_id, content, star)
+    	VALUES(#{user.id}, #{movie.id}, #{content}, #{star})
+	</insert>
+	
+	<delete id="deleteById" flushCache="true">
+		DELETE FROM ci_mcomment WHERE id = #{id}
+	</delete>
+	
+</mapper>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.ReservDAO">
+    <select id="seatCheck" parameterType="int" resultType="string">
+        SELECT seat
+        FROM ci_reserv
+        WHERE movie_id = #{id}
+    </select>
+
+    <insert id="insert" flushCache="true"
+            parameterType="domain.ReservDTO"
+            keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+        INSERT INTO ci_reserv
+            (user_id, movie_id, seat)
+        VALUES (#{user.id}, #{movie.id}, #{seat})
+    </insert>
+
+    <delete id="delete" flushCache="true">
+        DELETE
+        FROM ci_reserv
+        WHERE id = #{id}
+    </delete>
+
+    <select id="selectByMovieId" resultType="int">
+        SELECT re.movie_id
+        FROM ci_reserv re
+        WHERE re.id = #{param1}
+    </select>
+    
+    <select id="selectByUserId" resultType="int">
+    	SELECT re.user_id
+    	FROM ci_reserv re
+    	WHERE re.id = #{param1}
+    </select>
+
+    <sql id="SELECTSERVICE">
+        SELECT re.id         "re_id",
+               re.seat       "re_seat",
+               re.regdate    "re_regdate",
+               u.id          "u_id",
+               u.username    "u_username",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate",
+               m.id          "m_id",
+               m.title       "m_title",
+               m.genre       "m_genre",
+               m.runtime     "m_runtime",
+               m.director    "m_director",
+               m.actor       "m_actor",
+               m.synopsis    "m_synopsis",
+               m.regdate     "m_regdate"
+        FROM ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+    </sql>
+
+    <resultMap type="domain.UserDTO" id="mapUser">
+        <result column="u_id" property="id"/>
+        <result column="u_username" property="username"/>
+        <result column="u_password" property="password"/>
+        <result column="u_name" property="name"/>
+        <result column="u_authorities" property="authorities"/>
+        <result column="u_regdate" property="regDate"/>
+    </resultMap>
+
+    <resultMap type="domain.MovieDTO" id="mapMovie">
+        <result column="m_id" property="id"/>
+        <result column="m_title" property="title"/>
+        <result column="m_genre" property="genre"/>
+        <result column="m_runtime" property="runtime"/>
+        <result column="m_director" property="director"/>
+        <result column="m_actor" property="actor"/>
+        <result column="m_synopsis" property="synopsis"/>
+        <result column="m_regdate" property="regDate"/>
+    </resultMap>
+
+    <resultMap type="domain.ReservDTO" id="mapReserve">
+        <result column="re_id" property="id"/>
+        <result column="re_seat" property="seat"/>
+        <result column="re_regdate" property="regDate"/>
+        <collection property="user" resultMap="mapUser"/>
+        <collection property="movie" resultMap="mapMovie"/>
+    </resultMap>
+
+    <resultMap type="domain.MCommentDTO" id="mapComment">
+        <result column="c_id" property="id"/>
+        <result column="c_content" property="content"/>
+        <result column="c_star" property="star"/>
+        <result column="c_regdate" property="regdate"/>
+        <collection property="user" resultMap="mapUser"/>
+    </resultMap>
+
+    <select id="recentMyReserve" resultMap="mapReserve">
+        SELECT re.id         "re_id",
+               re.seat       "re_seat",
+               re.regdate    "re_regdate",
+               u.id          "u_id",
+               u.username    "u_username",
+               u.password    "u_password",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate",
+               m.id          "m_id",
+               m.title       "m_title",
+               m.genre       "m_genre",
+               m.runtime     "m_runtime",
+               m.director    "m_director",
+               m.synopsis    "m_synopsis",
+               m.regdate     "m_regdate"
+        FROM ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1}
+          ORDER BY re.id DESC 
+          LIMIT #{param2}, 5
+    </select>
+
+    <select id="selectById" resultType="domain.ReservDTO">
+        SELECT
+        	id, seat
+        FROM
+        	ci_reserv
+        WHERE  
+        	id = #{param1}
+    </select>
+	
+
+    <select id="mypageTicketList" resultMap="mapReserve">
+         SELECT re.id         "re_id",
+               re.seat       "re_seat",
+               re.regdate    "re_regdate",
+               u.id          "u_id",
+               u.username    "u_username",
+               u.password    "u_password",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate",
+               m.id          "m_id",
+               m.title       "m_title",
+               m.genre       "m_genre",
+               m.runtime     "m_runtime",
+               m.director    "m_director",
+               m.synopsis    "m_synopsis",
+               m.regdate     "m_regdate"
+        FROM ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1}
+          and m.id = #{param2}
+          ORDER BY re.id DESC
+    </select>
+    
+    <select id="totalSeat" resultType="int" parameterType="int">
+    	select count(re.seat) as seatCount
+        from ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1}
+          group by movie_id
+    </select>
+    
+    <select id="checkDupli" resultMap="mapReserve">
+    	select u.id          "u_id",
+               u.username    "u_username",
+               u.password    "u_password",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate",
+               m.id          "m_id",
+               m.title       "m_title",
+               m.genre       "m_genre",
+               m.runtime     "m_runtime",
+               m.director    "m_director",
+               m.synopsis    "m_synopsis",
+               m.regdate     "m_regdate",
+               group_concat(re.seat) as totalSeat
+        from ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1}
+          group by movie_id
+    </select>
+    <!-- 내 예약 페이징용 -->
+    <select id="selectFromRow" resultMap="mapReserve">
+		SELECT re.id         "re_id",
+               re.seat       "re_seat",
+               re.regdate    "re_regdate",
+               u.id          "u_id",
+               u.username    "u_username",
+               u.password    "u_password",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate",
+               m.id          "m_id",
+               m.title       "m_title",
+               m.genre       "m_genre",
+               m.runtime     "m_runtime",
+               m.director    "m_director",
+               m.synopsis    "m_synopsis",
+               m.regdate     "m_regdate"
+		FROM ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1}
+		ORDER BY re.id DESC
+		LIMIT #{param2}, #{param3}
+	</select>
+	
+	<select id="countAll" resultType="int">
+		SELECT count(*)
+		FROM ci_reserv re,
+             ci_user u,
+             ci_movies m
+        WHERE re.user_id = u.id
+          AND re.movie_id = m.id
+          AND re.user_id = #{param1} 
+	</select>
+</mapper>

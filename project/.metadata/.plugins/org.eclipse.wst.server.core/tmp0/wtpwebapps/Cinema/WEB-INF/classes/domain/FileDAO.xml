@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.FileDAO">
+	<insert 
+		id="insert" 
+		flushCache="true" 
+		parameterType="domain.FileDTO"
+	>
+		INSERT INTO ci_file (movie_id, file)
+		VALUES (#{param1}, #{param2})
+	</insert>
+	
+	<select id="selectById" resultType="domain.FileDTO">
+		SELECT id, movie_id, file
+	    FROM ci_file
+		WHERE id = #{param1}
+	</select>
+	
+	<select id="selectByMovieId" resultType="domain.FileDTO">
+		SELECT id, movie_id, file
+	    FROM ci_file
+		WHERE movie_id = #{param1}
+	</select>
+
+	<update id="update" flushCache="true"
+		parameterType="domain.FileDTO">
+		UPDATE ci_file
+		SET file = #{dto.file}
+		WHERE movie_id = #{dto.movie_id}
+	</update>
+
+	<delete id="deleteById" flushCache="true" 
+	parameterType="int">
+		DELETE FROM ci_file
+		WHERE id = #{id}
+	</delete>
+
+</mapper>

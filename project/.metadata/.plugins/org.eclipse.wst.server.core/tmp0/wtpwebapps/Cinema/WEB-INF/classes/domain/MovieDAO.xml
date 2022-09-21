@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.MovieDAO">
+	<select id="select" resultType="domain.MovieDTO">
+		SELECT id, title, genre, runtime, director, actor
+		FROM ci_movies
+		ORDER BY id DESC;
+	</select>
+	
+	<select
+		id="selectStars"
+		parameterType="int"
+		resultType="int"
+	>
+		SELECT star
+    	FROM ci_mcomment
+    	WHERE movie_id = #{id}
+	</select>
+	
+	<insert 
+		id="register" flushCache="true"
+		parameterType="domain.MovieDTO"
+		keyProperty="id" keyColumn="id"
+		useGeneratedKeys="true"
+	>
+		INSERT INTO ci_movies(title, genre, runtime, director, actor, synopsis)
+    	VALUES(
+    		#{title}, #{genre}, #{runtime}, 
+    		#{director}, #{actor}, #{synopsis}
+    	)
+	</insert>
+	
+	<select id="selectById" resultType="domain.MovieDTO">
+        SELECT
+	        id, title, genre, runtime, director, actor, synopsis
+        FROM 
+        	ci_movies
+        WHERE 
+        	id = #{id}
+	</select>
+	
+	<select id="selectByIdForSeat" resultType="domain.MovieDTO">
+        SELECT
+	        id, title, genre, runtime, director, actor, synopsis
+        FROM 
+        	ci_movies
+        WHERE 
+        	id = #{id}
+	</select>
+	
+	<!-- 글삭제 -->
+	<delete id="deleteById" flushCache="true">
+		DELETE FROM ci_movies WHERE id = #{id}
+	</delete>
+	
+	<!-- 글수정 -->
+	<update id="update" flushCache="true"
+		parameterType="domain.MovieDTO">
+		UPDATE ci_movies
+		SET 
+			title = #{title}, genre = #{genre}, runtime = #{runtime},
+			director = #{director}, actor = #{actor}, synopsis = #{synopsis}
+		WHERE id = #{id}
+	</update>
+
+
+	
+</mapper>

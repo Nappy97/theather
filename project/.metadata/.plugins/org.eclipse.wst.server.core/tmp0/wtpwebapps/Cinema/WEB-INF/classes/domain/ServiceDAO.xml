@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.ServiceDAO">
+
+    <!-- 반복해서 사용될 쿼리문은 sql 태그로 정의 include 태그로 가져다 쓸수 있다 -->
+    <sql id="SELECTSERVICE">
+        SELECT sl.id         "sl_id",
+               sl.title      "sl_title",
+               sl.content    "sl_content",
+               sl.viewcnt    "sl_viewcnt",
+               sl.regdate    "sl_regdate",
+               u.id          "u_id",
+               u.username    "u_username",
+               u.name        "u_name",
+               u.authorities "u_authorities",
+               u.regdate     "u_regdate"
+        FROM ci_servlist sl,
+             ci_user u
+        WHERE 1=1
+        	AND sl.user_id = u.id
+    </sql>
+
+    <resultMap type="domain.UserDTO" id="mapUser">
+        <result column="u_id" property="id"/>
+        <result column="u_username" property="username"/>
+        <result column="u_password" property="password"/>
+        <result column="u_name" property="name"/>
+        <result column="u_authorities" property="authorities"/>
+        <result column="u_regdate" property="regDate"/>
+    </resultMap>
+
+    <resultMap type="domain.ServiceDTO" id="mapService">
+        <result column="sl_id" property="id"/>
+        <result column="sl_title" property="title"/>
+        <result column="sl_content" property="content"/>
+        <result column="sl_viewcnt" property="viewCnt"/>
+        <result column="sl_regdate" property="regDate"/>
+        <collection property="user" resultMap="mapUser"/>
+    </resultMap>
+
+    <select id="select" resultMap="mapService">
+        <include refid="SELECTSERVICE"/>
+        ORDER BY
+        sl.id DESC
+    </select>
+
+
+    <insert id="insert" flushCache="true"
+            parameterType="domain.ServiceDTO"
+            keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+        INSERT INTO ci_servlist
+            (title, content, user_id)
+        VALUES (#{title}, #{content}, #{user.id})
+    </insert>
+
+    <!-- 글 조회 -->
+    <select id="selectById" resultMap="mapService">
+        <include refid="SELECTSERVICE"/>
+        AND sl.id = #{id}
+        ORDER BY
+        sl.id DESC
+    </select>
+
+
+    <!-- 조회수 증가 -->
+    <update id="incViewCnt" flushCache="true">
+        UPDATE ci_servlist
+        SET viewcnt = viewcnt + 1
+        WHERE id = #{param1}
+    </update>
+
+    <!-- 글수정 -->
+    <update id="update" flushCache="true"
+            parameterType="domain.ServiceDTO">
+        UPDATE ci_servlist
+        SET title   = #{title},
+            content = #{content}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 글삭제 -->
+    <delete id="deleteById" flushCache="true">
+        DELETE
+        FROM ci_servlist
+        WHERE id = #{id}
+    </delete>
+
+   <!-- 페이징 용 쿼리 -->
+    <select id="selectFromRow" resultMap="mapService" parameterType="hashmap">
+        <include refid="SELECTSERVICE"/>
+        AND sl.title LIKE CONCAT('%', #{search}, '%')
+        ORDER BY sl.id DESC
+        LIMIT #{from}, #{row}
+    </select>
+     
+
+    <select id="countAll" resultType="int">
+        SELECT count(*)
+        FROM ci_servlist
+    </select>
+
+    <select id="checkCmt" resultType="int" parameterType="int">
+        SELECT id
+        FROM ci_scomment
+        WHERE serv_id = #{id}
+    </select>
+
+    <select id="myService" resultMap="mapService">
+        SELECT sl.id      "sl_id",
+               sl.title   "sl_title",
+               sl.content "sl_content",
+               sl.regdate "sl_regdate",
+               sl.viewcnt "sl_viewcnt",
+               u.id "u_id",
+               u.username "u_username",
+               u.password "u_password",
+               u.name "u_name",
+               u.authorities "u_authorities",
+               u.regdate "u_regdate"
+        FROM ci_servlist sl,
+             ci_user u
+        WHERE sl.user_id = u.id
+			AND sl.user_id = #{param1}
+        ORDER BY sl.id DESC
+        LIMIT #{param2}, 10
+    </select>
+    
+
+
+</mapper>
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="domain.SCommentDAO">
+
+	<resultMap type="domain.UserDTO" id="mapUser">
+	    <result column="u_id" property="id"/>
+	    <result column="u_username" property="username"/>
+	    <result column="u_password" property="password"/>
+	    <result column="u_name" property="name"/>
+	    <result column="u_authorities" property="authorities"/>
+	    <result column="u_regdate" property="regDate"/>
+	</resultMap>
+	
+	<resultMap type="domain.SCommentDTO" id="mapComment">
+	    <result column="sc_id" property="id"/>
+	    <result column="sc_content" property="content"/>
+	    <result column="sc_regdate" property="regDate"/>
+	    <collection property="user" resultMap="mapUser"/>
+	</resultMap>
+	
+	<select id="selectByWrite" resultMap="mapComment">
+	    SELECT
+	        sc.id "sc_id",
+	        sc.content "sc_content",
+	        sc.regdate "sc_regdate",
+	        u.id "u_id",
+	        u.username "u_username",
+	        u.password "u_password",
+	        u.name "u_name",
+	        u.authorities "u_authorities",
+	        u.regdate "u_regdate"            
+	    FROM ci_scomment sc, ci_user u
+	    WHERE
+	        sc.user_id = u.id
+	        AND sc.serv_id = #{param1}
+	    ORDER BY sc.id DESC
+	</select>
+
+	<insert id="insert" flushCache="true" parameterType="domain.SCommentDTO"
+		keyProperty="id" useGeneratedKeys="true" keyColumn="id">
+	    INSERT INTO ci_scomment(user_id, serv_id, content)
+	    VALUES(#{user.id}, #{serv.id}, #{content})	
+	</insert>
+
+	<delete id="deleteById" flushCache="true">
+		DELETE FROM ci_scomment WHERE id = #{id}
+	</delete>
+	
+	
+
+
+</mapper>

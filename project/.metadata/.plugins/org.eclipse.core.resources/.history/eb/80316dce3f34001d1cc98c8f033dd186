@@ -1,0 +1,86 @@
+@charset "UTF-8";
+.gallerylist {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+ul {
+    font-size: 0;
+}
+
+ul > li {
+    display: inline-block;
+    vertical-align: top;
+    width: 33.3%;
+}
+
+ul > li > a {
+    display: block;
+    width: auto;
+    text-decoration: none;
+    margin: 5px;
+}
+
+ul > li > a.screen {
+    position: relative;
+    overflow: hidden;
+}
+
+ul > li > a.screen .top {
+    position: absolute;
+    bottom: 150%;
+    left: 30px;
+    z-index: 2;
+    color: #fff;
+    font-size: 26px;
+    font-weight: 900;
+    transition: all .35s;
+}
+
+ul > li > a.screen .bottom {
+    position: absolute;
+    top: 150px;
+    left: 30px;
+    z-index: 2;
+    color: #fff;
+    font-size: 12px;
+    transition: all .35s;
+}
+
+ul > li > a.screen img {
+    width: 100%;
+}
+
+ul > li > a h3 {
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+ul > li > a:hover .top {
+    bottom: 52%;
+}
+
+ul > li > a:hover .bottom {
+    top: 52%;
+}
+
+ul > li > a.screen ::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .5);
+    z-index: 1;
+    opacity: 0;
+    transition: all .35s;
+}
+
+ul > li > a:hover .screen::after {
+    opacity: 1;
+}
